@@ -1,0 +1,32 @@
+Generating SQLJ classes
+
+  To parse and generate sqlj code, configure the sqljDirs or sqljFiles element.
+  Both can be used on the same time.
+  Only files ending with .sqlj will be picked up from the sqljDirs element.
+  
++--
+<plugin>
+  <groupId>org.codehaus.mojo</groupId>
+  <artifactId>sqlj-maven-plugin</artifactId>
+  <version>${project.version}</version>
+  <executions>
+    <execution>
+      <goals>
+        <goal>sqlj</goal>
+      </goals>
+      <configuration>
+        <sqljDirs>
+          <sqljDir>src/main/sqlj</file>
+        </sqljDirs>
+      </configuration>
+    </execution>
+  </executions>
+  <dependencies>
+    <dependency>
+      <groupId>com.ibm.db2</groupId>
+      <artifactId>sqlj</artifactId>
+      <version>1.0</version>
+    </dependency>
+  </dependencies>
+</plugin>      
++--
