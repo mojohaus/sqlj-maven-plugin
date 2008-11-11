@@ -8,7 +8,7 @@
       <item name="FAQ" href="faq.html"/>
     </menu>
     <menu name="Examples">
-      <item name="Typical execution" href="examples/typical-execution.html" />
+      <item name="Typical usage" href="examples/typical-usage.html" />
     </menu>
   </body>
 </project>
