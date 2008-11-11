@@ -16,7 +16,7 @@ Generating SQLJ classes
       </goals>
       <configuration>
         <sqljDirs>
-          <sqljDir>src/main/sqlj</file>
+          <sqljDir>src/main/sqlj</sqljDir>
         </sqljDirs>
       </configuration>
     </execution>
