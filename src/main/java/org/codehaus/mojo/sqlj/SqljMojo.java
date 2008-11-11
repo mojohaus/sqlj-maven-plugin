@@ -7,11 +7,11 @@ import java.util.Set;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Generates SQLJ javacode.
@@ -53,9 +53,10 @@ public class SqljMojo
      * @parameter expression="${sqlj.sqljFiles}"
      */
     private File[] sqljFiles;
-    
+
     /**
      * Directories to recursively scan for .sqlj files.
+     * 
      * @parameter expression="${sqlj.sqljDirectories}"
      */
     private File[] sqljDirs;
@@ -75,13 +76,9 @@ public class SqljMojo
     public void execute()
         throws MojoExecutionException, MojoFailureException
     {
-        String[] arguments = { 
-            "-d=" + generatedSourcesLocation.getAbsolutePath(), 
-            "-encoding=" + encoding, 
-            status ? "-status" : "", 
-            "-compile=false",
-            StringUtils.join( getSqljFiles().iterator(), " " ) 
-        };
+        String[] arguments =
+            { "-d=" + generatedSourcesLocation.getAbsolutePath(), "-encoding=" + encoding, status ? "-status" : "",
+                "-compile=false", StringUtils.join( getSqljFiles().iterator(), " " ) };
 
         Class sqljClass;
         try
@@ -123,20 +120,21 @@ public class SqljMojo
 
     /**
      * Finds the union of files to generate for.
+     * 
      * @return a Set of unique files.
      */
     private Set getSqljFiles()
     {
         Set files = new HashSet();
-        
-        final String[] extensions = new String[]{"sqlj"};
-        for ( int i=0; i<sqljDirs.length; i++ )
+
+        final String[] extensions = new String[] { "sqlj" };
+        for ( int i = 0; i < sqljDirs.length; i++ )
         {
             files.addAll( FileUtils.listFiles( sqljDirs[i], extensions, true ) );
         }
-        
+
         Collections.addAll( files, sqljFiles );
-        
+
         return files;
     }
 
