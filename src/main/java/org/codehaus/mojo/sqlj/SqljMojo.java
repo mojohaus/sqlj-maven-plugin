@@ -83,7 +83,7 @@ public class SqljMojo
             getLog().warn( "No encoding given, falling back to system default value: " + encoding );
         }
         String[] arguments =
-            { "-d=" + generatedSourcesDirectory.getAbsolutePath(), "-encoding=" + encoding, status ? "-status" : "",
+            { "-dir=" + generatedSourcesDirectory.getAbsolutePath(), "-encoding=" + encoding, status ? "-status" : "",
                 "-compile=false", StringUtils.join( getSqljFiles().iterator(), " " ) };
 
         Class sqljClass;
