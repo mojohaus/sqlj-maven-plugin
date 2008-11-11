@@ -8,6 +8,7 @@ import java.util.Set;
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -36,7 +37,7 @@ public class SqljMojo
     /**
      * Codepage for generated sources.
      * 
-     * @parameter expression="${sqlj.encoding}" default-value="UTF-8"
+     * @parameter expression="${sqlj.encoding}" default-value="${project.build.sourceEncoding}"
      */
     private String encoding;
 
@@ -76,6 +77,11 @@ public class SqljMojo
     public void execute()
         throws MojoExecutionException, MojoFailureException
     {
+        if ( StringUtils.isEmpty( encoding ) )
+        {
+            encoding = SystemUtils.FILE_ENCODING;
+            getLog().warn( "No encoding given, falling back to system default value: " + encoding );
+        }
         String[] arguments =
             { "-d=" + generatedSourcesDirectory.getAbsolutePath(), "-encoding=" + encoding, status ? "-status" : "",
                 "-compile=false", StringUtils.join( getSqljFiles().iterator(), " " ) };
@@ -115,7 +121,7 @@ public class SqljMojo
             throw new MojoExecutionException( "Bad returncode: " + returnCode );
         }
 
-        mavenProject.getCompileSourceRoots().add( generatedSourcesDirectory.getAbsolutePath() );
+        mavenProject.addCompileSourceRoot( generatedSourcesDirectory.getAbsolutePath() );
     }
 
     /**
