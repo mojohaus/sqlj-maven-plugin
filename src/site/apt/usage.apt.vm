@@ -6,7 +6,7 @@ Prerequisites
 Sqlj. This can be done with the {{{install plugin}http://maven.apache.org/plugins/maven-install-plugin/install-file-mojo.html}}:
 
 +--
-mvn install:install-file -DgroupId=com.ibm.db2 -DartifactId=sqlj -Dversion=1.0 -Dfile=c:\progra~1\ibm\SQLLIB\java\sqlj.zip -Dpackaging=pom -DgeneratePom=true -DcreateChecksum=true
+mvn install:install-file -DgroupId=com.ibm.db2 -DartifactId=sqlj -Dversion=1.0 -Dfile=c:\progra~1\ibm\SQLLIB\java\sqlj.zip -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
 +--
 
 
