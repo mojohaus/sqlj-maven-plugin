@@ -1,16 +1,23 @@
 Usage
 
-Prerequisites
+* Prerequisites
 
   You will have to add the sqlj artifact as a dependency to the plugin, in order for it to be able to load and execute
 Sqlj. This can be done with the {{{http://maven.apache.org/plugins/maven-install-plugin/install-file-mojo.html}install-plugin}}:
 
 +--
-mvn install:install-file -DgroupId=com.ibm.db2 -DartifactId=sqlj -Dversion=1.0 -Dfile=c:\progra~1\ibm\SQLLIB\java\sqlj.zip -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
+mvn install:install-file \
+    -DgroupId=com.ibm.db2 \
+    -DartifactId=sqlj \
+    -Dversion=1.0 \
+    -Dpackaging=jar \
+    -Dfile=c:\progra~1\ibm\SQLLIB\java\sqlj.zip \
+    -DgeneratePom=true \
+    -DcreateChecksum=true
 +--
 
 
-Generating SQLJ classes
+* Generating SQLJ classes
 
   To parse and generate sqlj code, configure the sqljDirs or sqljFiles element.
   Both can be used on the same time.
