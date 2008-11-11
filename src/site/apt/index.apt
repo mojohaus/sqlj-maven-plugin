@@ -15,7 +15,7 @@ SQLJ maven plugin
 
   General Information about the goals.
 
-  * {{{generate-mojo.html}sqlj:generate}} Generate .java from .sqlj files.
+  * {{{sqlj-mojo.html}sqlj:sqlj}} Generate .java from .sqlj files.
 
   * {{{help-mojo.html}sqlj:help}} Usage help.
   
