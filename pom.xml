@@ -13,12 +13,10 @@
   <prerequisites>
     <maven>2.0</maven>
   </prerequisites>
-  <!-- TODO: when released 
   <issueManagement>
     <system>jira</system>
-    <url></url>
+    <url>http://jira.codehaus.org/browse/MOJO/component/13576</url>
   </issueManagement>
-  -->
   <description>
     A wrapper around the sqlj.tools.Sqlj SQLJ generator.
   </description>
@@ -129,8 +127,7 @@
         <artifactId>maven-changes-plugin</artifactId>
         <version>2.0</version>
         <configuration>
-          <columnNames>Key,Summary,Status,Resolution,Assignee,Type,Version,Fix
-            Version</columnNames>
+          <columnNames>Key,Summary,Status,Resolution,Assignee,Type,Version,FixVersion</columnNames>
           <toAddresses>
             <toAddress>dev@mojo.codehaus.org</toAddress>
             <toAddress>user@mojo.codehaus.org</toAddress>
