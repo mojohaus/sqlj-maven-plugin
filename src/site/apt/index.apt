@@ -25,9 +25,3 @@ SQLJ maven plugin
 
   Instructions on how to use the SQLJ maven plugin can be found on the {{{usage.html}usage page}}.
 
-* Examples
-
-  To provide you with better understanding of some usages of the WAS6 maven plugin,
-  you can take a look into the following examples:
-
-  * {{{examples/typical-usage.html}Typical usage.}}
