@@ -1,7 +1,7 @@
 package org.codehaus.mojo.sqlj;
 
 import java.io.File;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -133,7 +133,7 @@ public class SqljMojo
             files.addAll( FileUtils.listFiles( sqljDirs[i], extensions, true ) );
         }
 
-        Collections.addAll( files, sqljFiles );
+        files.addAll( Arrays.asList( sqljFiles ) );
 
         return files;
     }
