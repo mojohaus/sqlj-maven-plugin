@@ -28,10 +28,10 @@ public class SqljMojo
      * Location for generated source files.
      * 
      * @parameter expression="${sqlj.generatedSourcesDirectory}"
-     *            default-value="${project.build.directory}/generated-sources/sqlj-maven-plugin"
+     *            default-value="${project.build.directory}/generated-sources/sqlj"
      * @required
      */
-    private File generatedSourcesLocation;
+    private File generatedSourcesDirectory;
 
     /**
      * Codepage for generated sources.
@@ -77,7 +77,7 @@ public class SqljMojo
         throws MojoExecutionException, MojoFailureException
     {
         String[] arguments =
-            { "-d=" + generatedSourcesLocation.getAbsolutePath(), "-encoding=" + encoding, status ? "-status" : "",
+            { "-d=" + generatedSourcesDirectory.getAbsolutePath(), "-encoding=" + encoding, status ? "-status" : "",
                 "-compile=false", StringUtils.join( getSqljFiles().iterator(), " " ) };
 
         Class sqljClass;
@@ -94,9 +94,9 @@ public class SqljMojo
             throw new MojoFailureException( e.getMessage() );
         }
 
-        if ( !generatedSourcesLocation.getAbsoluteFile().mkdir() )
+        if ( !generatedSourcesDirectory.getAbsoluteFile().mkdir() )
         {
-            getLog().warn( generatedSourcesLocation.getAbsolutePath() + " already exists and may contain stale sources" );
+            getLog().warn( generatedSourcesDirectory.getAbsolutePath() + " already exists and may contain stale sources" );
         }
 
         Integer returnCode = null;
@@ -115,7 +115,7 @@ public class SqljMojo
             throw new MojoExecutionException( "Bad returncode: " + returnCode );
         }
 
-        mavenProject.getCompileSourceRoots().add( generatedSourcesLocation.getAbsolutePath() );
+        mavenProject.getCompileSourceRoots().add( generatedSourcesDirectory.getAbsolutePath() );
     }
 
     /**

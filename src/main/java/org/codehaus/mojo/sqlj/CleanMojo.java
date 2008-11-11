@@ -22,10 +22,10 @@ public class CleanMojo
      * Location for generated source files.
      * 
      * @parameter expression="${sqlj.generatedSourcesDirectory}"
-     *            default-value="${project.build.directory}/generated-sources/sqlj-maven-plugin"
+     *            default-value="${project.build.directory}/generated-sources/sqlj"
      * @required
      */
-    private File generatedSourcesLocation;
+    private File generatedSourcesDirectory;
 
     /**
      * {@inheritDoc}
@@ -35,7 +35,7 @@ public class CleanMojo
     {
         try
         {
-            FileUtils.cleanDirectory( generatedSourcesLocation );
+            FileUtils.cleanDirectory( generatedSourcesDirectory );
         }
         catch ( IOException e )
         {
