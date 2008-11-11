@@ -1,0 +1,6 @@
+Usage
+
+Prerequisites
+
+  You will have to add the sqlj artifact as a dependency to the plugin, in order for it to be able to load and execute
+Sqlj.
