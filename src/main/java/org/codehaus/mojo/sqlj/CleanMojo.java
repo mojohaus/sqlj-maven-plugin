@@ -35,7 +35,7 @@ public class CleanMojo
     {
         try
         {
-            FileUtils.cleanDirectory( generatedSourcesDirectory );
+            FileUtils.deleteDirectory( generatedSourcesDirectory );
         }
         catch ( IOException e )
         {
