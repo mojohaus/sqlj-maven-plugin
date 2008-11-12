@@ -1,6 +1,7 @@
 package org.codehaus.mojo.sqlj;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -100,9 +101,12 @@ public class SqljMojo
             throw new MojoFailureException( e.getMessage() );
         }
 
-        if ( !generatedSourcesDirectory.getAbsoluteFile().mkdir() )
+        try {
+            FileUtils.forceMkdir( generatedSourcesDirectory.getAbsoluteFile() );
+        }
+        catch ( IOException e )
         {
-            getLog().warn( generatedSourcesDirectory.getAbsolutePath() + " already exists and may contain stale sources" );
+            throw new MojoFailureException( e.getMessage() );
         }
 
         Integer returnCode = null;
