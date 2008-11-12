@@ -1,10 +1,8 @@
 package org.codehaus.mojo.sqlj;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -16,16 +14,8 @@ import org.apache.maven.plugin.MojoFailureException;
  * @author <a href="mailto:david@codehaus.org">David J. M. Karlsen</a>
  */
 public class CleanMojo
-    extends AbstractMojo
+    extends AbstractSqljMojo
 {
-    /**
-     * Location for generated source files.
-     * 
-     * @parameter expression="${sqlj.generatedSourcesDirectory}"
-     *            default-value="${project.build.directory}/generated-sources/sqlj"
-     * @required
-     */
-    private File generatedSourcesDirectory;
 
     /**
      * {@inheritDoc}
@@ -35,7 +25,8 @@ public class CleanMojo
     {
         try
         {
-            FileUtils.deleteDirectory( generatedSourcesDirectory );
+            FileUtils.deleteDirectory( getGeneratedSourcesDirectory() );
+            FileUtils.deleteDirectory( getGeneratedResourcesDirectory() );
         }
         catch ( IOException e )
         {
