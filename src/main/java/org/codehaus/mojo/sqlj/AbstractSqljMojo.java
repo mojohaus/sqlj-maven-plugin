@@ -17,7 +17,6 @@ public abstract class AbstractSqljMojo
      * 
      * @parameter expression="${sqlj.generatedSourcesDirectory}"
      *            default-value="${project.build.directory}/generated-sources/sqlj"
-     * @required
      */
     private File generatedSourcesDirectory;
     
