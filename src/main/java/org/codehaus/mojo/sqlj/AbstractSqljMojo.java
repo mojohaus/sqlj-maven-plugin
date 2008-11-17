@@ -5,6 +5,7 @@ import java.io.File;
 import org.apache.maven.plugin.AbstractMojo;
 
 /**
+ * Common superclass for sharing configuration attributes.
  * 
  * @author karltdav
  *
