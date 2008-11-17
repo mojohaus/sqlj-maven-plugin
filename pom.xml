@@ -15,7 +15,7 @@
   </prerequisites>
   <issueManagement>
     <system>jira</system>
-    <url>http://jira.codehaus.org/browse/MOJO/component/13576</url>
+    <url>http://jira.codehaus.org/browse/MSQLJ</url>
   </issueManagement>
   <description>
     A wrapper around the sqlj.tools.Sqlj SQLJ generator.
