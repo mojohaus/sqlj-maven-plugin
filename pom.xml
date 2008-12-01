@@ -129,12 +129,13 @@
         <version>2.1</version>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-changes-plugin</artifactId>
-        <version>2.0</version>
+        <version>2.1</version>
         <configuration>
           <columnNames>Key,Summary,Status,Resolution,Assignee,Type,Version,FixVersion</columnNames>
           <urlDownload>${project.url}</urlDownload>
-	  <generateJiraAnnouncement>true</generateJiraAnnouncement>
+	      <generateJiraAnnouncement>true</generateJiraAnnouncement>
           <toAddresses>
             <toAddress>dev@mojo.codehaus.org</toAddress>
             <toAddress>user@mojo.codehaus.org</toAddress>
