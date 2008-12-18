@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.commons.beanutils.MethodUtils;
@@ -75,13 +76,38 @@ public class SqljMojo
             encoding = SystemUtils.FILE_ENCODING;
             getLog().warn( "No encoding given, falling back to system default value: " + encoding );
         }
-        String[] arguments = { 
-            "-dir=" + getGeneratedSourcesDirectory().getAbsolutePath(),
-            "-d=" + getGeneratedResourcesDirectory().getAbsolutePath(),
-            "-encoding=" + encoding, 
-            status ? "-status" : "",
-            "-compile=false", StringUtils.join( getSqljFiles().iterator(), " " ) };
+        
+        try {
+            FileUtils.forceMkdir( getGeneratedResourcesDirectory().getAbsoluteFile() );
+            FileUtils.forceMkdir( getGeneratedSourcesDirectory().getAbsoluteFile() );
+        }
+        catch ( IOException e )
+        {
+            throw new MojoFailureException( e.getMessage() );
+        }
 
+        Set sqljFiles = getSqljFiles();
+        for ( Iterator i=sqljFiles.iterator(); i.hasNext(); )
+        {
+            File file = (File) i.next();
+            generate( file );
+        }
+        
+        Resource resource = new Resource();
+        resource.setDirectory( getGeneratedResourcesDirectory().getAbsolutePath() );
+        mavenProject.addResource( resource );
+        mavenProject.addCompileSourceRoot( getGeneratedSourcesDirectory().getAbsolutePath() );
+    }
+    
+    /**
+     * Generate resources for a given file.
+     * @param file to generate from.
+     * @throws MojoFailureException in case of failure.
+     * @throws MojoExecutionException in case of execution failure.
+     */
+    private void generate( File file )
+        throws MojoFailureException, MojoExecutionException
+    {
         Class sqljClass;
         try
         {
@@ -95,16 +121,14 @@ public class SqljMojo
         {
             throw new MojoFailureException( e.getMessage() );
         }
-
-        try {
-            FileUtils.forceMkdir( getGeneratedResourcesDirectory().getAbsoluteFile() );
-            FileUtils.forceMkdir( getGeneratedSourcesDirectory().getAbsoluteFile() );
-        }
-        catch ( IOException e )
-        {
-            throw new MojoFailureException( e.getMessage() );
-        }
-
+        
+        String[] arguments = { 
+            "-dir=" + getGeneratedSourcesDirectory().getAbsolutePath(),
+            "-d=" + getGeneratedResourcesDirectory().getAbsolutePath(),
+            "-encoding=" + encoding, 
+            status ? "-status" : "",
+            "-compile=false", file.getAbsolutePath() };
+        
         Integer returnCode = null;
         try
         {
@@ -120,11 +144,6 @@ public class SqljMojo
         {
             throw new MojoExecutionException( "Bad returncode: " + returnCode );
         }
-
-        Resource resource = new Resource();
-        resource.setDirectory( getGeneratedResourcesDirectory().getAbsolutePath() );
-        mavenProject.addResource( resource );
-        mavenProject.addCompileSourceRoot( getGeneratedSourcesDirectory().getAbsolutePath() );
     }
 
     /**
