@@ -82,10 +82,9 @@ public class SqljMojo
             throw new MojoFailureException( e.getMessage() );
         }
 
-        Set sqljFiles = getSqljFiles();
-        for ( Iterator i=sqljFiles.iterator(); i.hasNext(); )
+        Set<File> sqljFiles = getSqljFiles();
+        for ( File file : sqljFiles )
         {
-            File file = (File) i.next();
             generate( file );
         }
         
@@ -147,14 +146,14 @@ public class SqljMojo
      * 
      * @return a Set of unique files.
      */
-    private Set getSqljFiles()
+    private Set<File> getSqljFiles()
     {
-        Set files = new HashSet();
+        Set<File> files = new HashSet<File>();
 
         final String[] extensions = new String[] { "sqlj" };
-        for ( int i = 0; i < sqljDirs.length; i++ )
+        for ( File dir : sqljDirs )
         {
-            files.addAll( FileUtils.listFiles( sqljDirs[i], extensions, true ) );
+            files.addAll( FileUtils.listFiles( dir, extensions, true ) );
         }
 
         files.addAll( Arrays.asList( sqljFiles ) );
