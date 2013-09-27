@@ -15,13 +15,13 @@ SQLJ maven plugin
 
   General Information about the goals.
 
-  * {{{sqlj-mojo.html}sqlj:sqlj}} Generate .java from .sqlj files.
+  * {{{./sqlj-mojo.html}sqlj:sqlj}} Generate .java from .sqlj files.
 
-  * {{{help-mojo.html}sqlj:help}} Usage help.
+  * {{{./help-mojo.html}sqlj:help}} Usage help.
   
-  * {{{clean-mojo.html}sqlj:clean}} Cleanout generated sources.
+  * {{{./clean-mojo.html}sqlj:clean}} Cleanout generated sources.
   
 * Usage
 
-  Instructions on how to use the SQLJ maven plugin can be found on the {{{usage.html}usage page}}.
+  Instructions on how to use the SQLJ maven plugin can be found on the {{{./usage.html}usage page}}.
 
