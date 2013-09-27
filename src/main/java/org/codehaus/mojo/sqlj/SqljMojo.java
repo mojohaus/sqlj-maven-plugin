@@ -14,55 +14,51 @@ import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 
 /**
  * Generates SQLJ javacode.
  * 
  * @author <a href="mailto:david@codehaus.org">David J. M. Karlsen</a>
- * @goal sqlj
- * @phase generate-sources
- * @requiresDependencyResolution compile
  */
+@Mojo( name = "sqlj", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE )
 public class SqljMojo
     extends AbstractSqljMojo
 {
     
     /**
      * Codepage for generated sources.
-     * 
-     * @parameter expression="${sqlj.encoding}" default-value="${project.build.sourceEncoding}"
      */
+    @Parameter( property = "sqlj.encoding", defaultValue = "${project.build.sourceEncoding}" )
     private String encoding;
 
     /**
      * Show status while executing.
-     * 
-     * @parameter expression="${sqlj.status}" default-value="true"
      */
+    @Parameter( property = "sqlj.status", defaultValue = "true" )
     private boolean status;
 
     /**
      * Explicit list of sqlj files to process.
-     * 
-     * @parameter expression="${sqlj.sqljFiles}"
      */
+    @Parameter( property = "sqlj.sqljFiles" )
     private File[] sqljFiles;
 
     /**
      * Directories to recursively scan for .sqlj files.
-     * 
-     * @parameter expression="${sqlj.sqljDirectories}"
      */
+    @Parameter( property = "sqlj.sqljDirectories" )
     private File[] sqljDirs;
 
     /**
      * The enclosing project.
-     * 
-     * @parameter default-value="${project}"
-     * @required
-     * @readonly
      */
+    @Component
     private MavenProject mavenProject;
 
     /**
