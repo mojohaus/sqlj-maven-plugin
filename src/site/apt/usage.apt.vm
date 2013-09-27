@@ -30,6 +30,7 @@ mvn install:install-file \
   <version>${project.version}</version>
   <executions>
     <execution>
+      <id>sqlj</id>
       <goals>
         <goal>sqlj</goal>
       </goals>
