@@ -110,7 +110,7 @@ public class SqljMojo
         }
         catch ( ClassNotFoundException e )
         {
-            throw new MojoFailureException( "Please add sqlj to the plugins classpath " + e.getMessage() );
+            throw new MojoFailureException( "Please add sqlj to the plugin's classpath: " + e.getMessage() );
         }
         catch ( Exception e )
         {
@@ -137,7 +137,7 @@ public class SqljMojo
 
         if ( returnCode.intValue() != 0 )
         {
-            throw new MojoExecutionException( "Bad returncode: " + returnCode );
+            throw new MojoExecutionException( "Bad return code: " + returnCode );
         }
     }
 
