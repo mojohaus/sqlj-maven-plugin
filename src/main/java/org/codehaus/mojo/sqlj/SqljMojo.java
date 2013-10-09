@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.commons.beanutils.MethodUtils;
@@ -30,7 +29,7 @@ import org.apache.maven.project.MavenProject;
 public class SqljMojo
     extends AbstractSqljMojo
 {
-    
+
     /**
      * Codepage for generated sources.
      */
@@ -72,8 +71,9 @@ public class SqljMojo
             encoding = SystemUtils.FILE_ENCODING;
             getLog().warn( "No encoding given, falling back to system default value: " + encoding );
         }
-        
-        try {
+
+        try
+        {
             FileUtils.forceMkdir( getGeneratedResourcesDirectory().getAbsoluteFile() );
             FileUtils.forceMkdir( getGeneratedSourcesDirectory().getAbsoluteFile() );
         }
@@ -87,15 +87,16 @@ public class SqljMojo
         {
             generate( file );
         }
-        
+
         Resource resource = new Resource();
         resource.setDirectory( getGeneratedResourcesDirectory().getAbsolutePath() );
         mavenProject.addResource( resource );
         mavenProject.addCompileSourceRoot( getGeneratedSourcesDirectory().getAbsolutePath() );
     }
-    
+
     /**
      * Generate resources for a given file.
+     * 
      * @param file to generate from.
      * @throws MojoFailureException in case of failure.
      * @throws MojoExecutionException in case of execution failure.
@@ -116,14 +117,12 @@ public class SqljMojo
         {
             throw new MojoFailureException( e.getMessage() );
         }
-        
-        String[] arguments = { 
-            "-dir=" + getGeneratedSourcesDirectory().getAbsolutePath(),
-            "-d=" + getGeneratedResourcesDirectory().getAbsolutePath(),
-            "-encoding=" + encoding, 
-            status ? "-status" : "",
-            "-compile=false", file.getAbsolutePath() };
-        
+
+        String[] arguments =
+            { "-dir=" + getGeneratedSourcesDirectory().getAbsolutePath(),
+                "-d=" + getGeneratedResourcesDirectory().getAbsolutePath(), "-encoding=" + encoding,
+                status ? "-status" : "", "-compile=false", file.getAbsolutePath() };
+
         Integer returnCode = null;
         try
         {
