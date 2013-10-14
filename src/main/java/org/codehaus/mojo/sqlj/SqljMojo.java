@@ -2,7 +2,9 @@ package org.codehaus.mojo.sqlj;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.beanutils.MethodUtils;
@@ -38,10 +40,10 @@ public class SqljMojo
     private String encoding;
 
     /**
-     * Show status while executing.
+     * Show detailed information on SQLJ processing. (Is automatically shown if Maven is executed in debug mode.)
      */
-    @Parameter( property = "sqlj.status", defaultValue = "true" )
-    private boolean status;
+    @Parameter( property = "sqlj.verbose", defaultValue = "false" )
+    private boolean verbose;
 
     /**
      * Explicit list of SQLJ files to process.
@@ -194,10 +196,16 @@ public class SqljMojo
             throw new MojoFailureException( e.getMessage() );
         }
 
-        String[] arguments =
-            { "-dir=" + getGeneratedSourcesDirectory().getAbsolutePath(),
-                "-d=" + getGeneratedResourcesDirectory().getAbsolutePath(), "-encoding=" + encoding,
-                status ? "-status" : "", "-compile=false", file.getAbsolutePath() };
+        List<String> sqljArgs = new ArrayList<String>();
+        sqljArgs.add( "-dir=" + getGeneratedSourcesDirectory().getAbsolutePath() );
+        sqljArgs.add( "-d=" + getGeneratedResourcesDirectory().getAbsolutePath() );
+        sqljArgs.add( "-encoding=" + encoding );
+        if ( verbose || getLog().isDebugEnabled() )
+        {
+            sqljArgs.add( "-status" );
+        }
+        sqljArgs.add( "-compile=false" );
+        sqljArgs.add( file.getAbsolutePath() );
 
         Integer returnCode = null;
         try
@@ -206,8 +214,8 @@ public class SqljMojo
             {
                 getLog().debug( "Performing SQLJ translation on " + file );
             }
-            returnCode =
-                (Integer) MethodUtils.invokeExactStaticMethod( sqljClass, "statusMain", new Object[] { arguments } );
+            Object[] methodArgs = new Object[] { sqljArgs.toArray( new String[0] ) };
+            returnCode = (Integer) MethodUtils.invokeExactStaticMethod( sqljClass, "statusMain", methodArgs );
         }
         catch ( Exception e )
         {
