@@ -2,7 +2,6 @@ package org.codehaus.mojo.sqlj;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,9 +18,11 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.Scanner;
+import org.sonatype.plexus.build.incremental.BuildContext;
 
 /**
- * Generates SQLJ javacode.
+ * Translates SQLJ source code using the SQLJ Translator.
  * 
  * @author <a href="mailto:david@codehaus.org">David J. M. Karlsen</a>
  */
@@ -43,13 +44,13 @@ public class SqljMojo
     private boolean status;
 
     /**
-     * Explicit list of sqlj files to process.
+     * Explicit list of SQLJ files to process.
      */
     @Parameter( property = "sqlj.sqljFiles" )
     private File[] sqljFiles;
 
     /**
-     * Directories to recursively scan for .sqlj files.
+     * Directories to recursively scan for SQLJ files (only files with .sqlj extension are included).
      */
     @Parameter( property = "sqlj.sqljDirectories" )
     private File[] sqljDirs;
@@ -61,11 +62,23 @@ public class SqljMojo
     private MavenProject mavenProject;
 
     /**
+     * For m2e compatibility.
+     */
+    @Component
+    private BuildContext buildContext;
+
+    /**
      * {@inheritDoc}
      */
     public void execute()
         throws MojoExecutionException, MojoFailureException
     {
+        if ( !checkSqljDirAndFileDeclarations() )
+        {
+            String msg = "Plugin configuration contains invalid SQLJ directory or file declaration(s).";
+            throw new MojoExecutionException( msg );
+        }
+
         if ( StringUtils.isEmpty( encoding ) )
         {
             encoding = SystemUtils.FILE_ENCODING;
@@ -82,26 +95,89 @@ public class SqljMojo
             throw new MojoFailureException( e.getMessage() );
         }
 
-        Set<File> sqljFiles = getSqljFiles();
-        for ( File file : sqljFiles )
+        Set<File> sqljFiles = getStaleSqljFiles();
+        boolean translationPerformed;
+        if ( !sqljFiles.isEmpty() )
         {
-            generate( file );
+            for ( File file : sqljFiles )
+            {
+                buildContext.removeMessages( file );
+                try
+                {
+                    translate( file );
+                }
+                catch ( MojoExecutionException e )
+                {
+                    buildContext.addMessage( file, 0, 0, "Error translating SQLJ file", BuildContext.SEVERITY_ERROR, e );
+                    throw e;
+                }
+            }
+            translationPerformed = true;
+            final int numberOfFiles = sqljFiles.size();
+            getLog().info( "Translated " + numberOfFiles + " SQLJ file" + ( numberOfFiles > 0 ? "s." : "." ) );
+        }
+        else
+        {
+            getLog().info( "No updated SQLJ files found - skipping SQLJ translation." );
+            translationPerformed = false;
         }
 
         Resource resource = new Resource();
         resource.setDirectory( getGeneratedResourcesDirectory().getAbsolutePath() );
         mavenProject.addResource( resource );
+        if ( translationPerformed )
+        {
+            buildContext.refresh( getGeneratedResourcesDirectory() );
+        }
         mavenProject.addCompileSourceRoot( getGeneratedSourcesDirectory().getAbsolutePath() );
+        if ( translationPerformed )
+        {
+            buildContext.refresh( getGeneratedSourcesDirectory() );
+        }
+    }
+
+    private boolean checkSqljDirAndFileDeclarations()
+    {
+        boolean isOk = true;
+
+        for ( File sqljDir : sqljDirs )
+        {
+            if ( !sqljDir.exists() )
+            {
+                getLog().error( "Declared SQLJ directory does not exist: " + sqljDir );
+                isOk = false;
+            }
+            if ( !sqljDir.isDirectory() )
+            {
+                getLog().error( "Declared SQLJ directory is not a directory: " + sqljDir );
+                isOk = false;
+            }
+        }
+        for ( File sqljFile : sqljFiles )
+        {
+            if ( !sqljFile.exists() )
+            {
+                getLog().error( "Declared SQLJ file does not exist: " + sqljFile );
+                isOk = false;
+            }
+            if ( !sqljFile.isFile() )
+            {
+                getLog().error( "Declared SQLJ file is not a file: " + sqljFile );
+                isOk = false;
+            }
+        }
+
+        return isOk;
     }
 
     /**
-     * Generate resources for a given file.
+     * Executes the SQLJ Translator on the given file.
      * 
-     * @param file to generate from.
+     * @param file the file to translate
      * @throws MojoFailureException in case of failure.
      * @throws MojoExecutionException in case of execution failure.
      */
-    private void generate( File file )
+    private void translate( File file )
         throws MojoFailureException, MojoExecutionException
     {
         Class sqljClass;
@@ -111,7 +187,7 @@ public class SqljMojo
         }
         catch ( ClassNotFoundException e )
         {
-            throw new MojoFailureException( "Please add sqlj to the plugin's classpath: " + e.getMessage() );
+            throw new MojoFailureException( "Please add SQLJ Translator to the plugin's classpath: " + e.getMessage() );
         }
         catch ( Exception e )
         {
@@ -126,6 +202,10 @@ public class SqljMojo
         Integer returnCode = null;
         try
         {
+            if ( getLog().isDebugEnabled() )
+            {
+                getLog().debug( "Performing SQLJ translation on " + file );
+            }
             returnCode =
                 (Integer) MethodUtils.invokeExactStaticMethod( sqljClass, "statusMain", new Object[] { arguments } );
         }
@@ -136,28 +216,96 @@ public class SqljMojo
 
         if ( returnCode.intValue() != 0 )
         {
-            throw new MojoExecutionException( "Bad return code: " + returnCode );
+            throw new MojoExecutionException( "Can't translate file (return code: " + returnCode + ")" );
         }
     }
 
     /**
-     * Finds the union of files to generate for.
-     * 
-     * @return a Set of unique files.
+     * Returns a set of SQLJ source files, based on configured directories and files, that has been modified and
+     * therefore needs to be re-translated.
      */
-    private Set<File> getSqljFiles()
+    private Set<File> getStaleSqljFiles()
+        throws MojoExecutionException
     {
-        Set<File> files = new HashSet<File>();
+        Set<File> staleFiles = new HashSet<File>();
 
-        final String[] extensions = new String[] { "sqlj" };
-        for ( File dir : sqljDirs )
+        // Check for modified files in configured directory declarations
+        final String[] sqljIncludes = new String[] { "**/*.sqlj" };
+        for ( File sqljDir : sqljDirs )
         {
-            files.addAll( FileUtils.listFiles( dir, extensions, true ) );
+            if ( getLog().isDebugEnabled() )
+            {
+                getLog().debug( "Checking for updated SQLJ files in directory: " + sqljDir );
+            }
+            Scanner modifiedScanner = this.buildContext.newScanner( sqljDir );
+            modifiedScanner.setIncludes( sqljIncludes );
+            modifiedScanner.setExcludes( null );
+            modifiedScanner.scan();
+
+            String[] modifiedFiles = modifiedScanner.getIncludedFiles();
+            for ( String path : modifiedFiles )
+            {
+                File file = new File( sqljDir, path );
+                if ( getLog().isDebugEnabled() )
+                {
+                    getLog().debug( "Updated SQLJ file found: " + file );
+                }
+                if ( !staleFiles.add( file ) )
+                {
+                    getLog().warn( "Duplicated declaration of SQLJ source detected in plugin configuration: " + file );
+                }
+            }
         }
 
-        files.addAll( Arrays.asList( sqljFiles ) );
+        // Check for modified files in configured file declarations
+        for ( File sqljFile : sqljFiles )
+        {
+            if ( getLog().isDebugEnabled() )
+            {
+                getLog().debug( "Checking if SQLJ file has been updated: " + sqljFile );
+            }
+            Scanner modifiedScanner = this.buildContext.newScanner( sqljFile.getParentFile() );
+            modifiedScanner.setIncludes( new String[] { sqljFile.getName() } );
+            modifiedScanner.setExcludes( null );
+            modifiedScanner.scan();
 
-        return files;
+            String[] modifiedFiles = modifiedScanner.getIncludedFiles();
+            if ( modifiedFiles.length == 1 )
+            {
+                String path = modifiedFiles[0];
+                File file = new File( sqljFile.getParentFile(), path );
+                if ( file.compareTo( sqljFile ) == 0 )
+                {
+                    if ( getLog().isDebugEnabled() )
+                    {
+                        getLog().debug( "Updated SQLJ file found: " + sqljFile );
+                    }
+                    if ( !staleFiles.add( file ) )
+                    {
+                        getLog().warn( "Duplicated declaration of SQLJ source detected in plugin configuration: "
+                                           + file );
+                    }
+                }
+                else
+                {
+                    // Should never happen...
+                    getLog().error( "Unexpected SQLJ file returned; aborting..." );
+                    throw new MojoExecutionException( "Unexpected SQLJ file returned when examining " + sqljFile + ": "
+                        + file );
+                }
+            }
+            else if ( modifiedFiles.length > 1 )
+            {
+                // Should never happen...
+                getLog().error( "Unexpected list of SQLJ files returned; aborting..." );
+                throw new MojoExecutionException( "Unexpected list of SQLJ files returned when examining " + sqljFile
+                    + ": " + modifiedFiles );
+            }
+        }
+
+        // Ignoring checking for deleted files. User should run "mvn clean" to handle that, consistent with
+        // how it works if Java source files are deleted.
+
+        return staleFiles;
     }
-
 }

@@ -14,7 +14,7 @@
   <packaging>maven-plugin</packaging>
 
   <name>Mojo's SQLJ Maven Plugin</name>
-  <description>A wrapper around the sqlj.tools.Sqlj SQLJ generator.</description>
+  <description>A wrapper around the sqlj.tools.Sqlj SQLJ Translator.</description>
   <url>http://mojo.codehaus.org/sqlj-maven-plugin/</url>
   <inceptionYear>2008</inceptionYear>
   <licenses>
@@ -37,6 +37,15 @@
         <role>developer</role>
       </roles>
       <timezone>1</timezone>
+    </developer>
+    <developer>
+      <id>andham</id>
+      <name>Anders Hammar</name>
+      <email>afloom@codehaus.org</email>
+      <timezone>+1</timezone>
+      <roles>
+        <role>Developer</role>
+      </roles>
     </developer>
   </developers>
 
@@ -95,6 +104,11 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
       <version>2.6</version>
+    </dependency>
+    <dependency>
+      <groupId>org.sonatype.plexus</groupId>
+      <artifactId>plexus-build-api</artifactId>
+      <version>0.0.7</version>
     </dependency>
     <!-- generated help mojo has a dependency to plexus-utils -->
     <dependency>
