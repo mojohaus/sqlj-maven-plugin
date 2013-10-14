@@ -19,7 +19,7 @@ mvn install:install-file \
 
 * Translating SQLJ source code
 
-  To parse and generate SQLJ cource code, configure the <<<sqljDirs>>> and/or <<<sqljFiles>>> element.
+  To parse and generate SQLJ source code, configure the <<<sqljDirs>>> and/or <<<sqljFiles>>> element.
   Both can be used on the same time.
   Only files with .sqlj extension will be picked up from the <<<sqljDirs>>> element.
   
