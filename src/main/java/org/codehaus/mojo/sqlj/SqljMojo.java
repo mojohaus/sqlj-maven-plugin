@@ -33,6 +33,8 @@ public class SqljMojo
     extends AbstractSqljMojo
 {
 
+    private static final String SQLJ_CLASS = "sqlj.tools.Sqlj";
+    
     /**
      * Codepage for generated sources.
      */
@@ -75,6 +77,16 @@ public class SqljMojo
     public void execute()
         throws MojoExecutionException, MojoFailureException
     {
+        String sqljVersionInfo = getSqljVersionInfo();
+        if ( sqljVersionInfo != null )
+        {
+            getLog().info( "Using SQLJ Translator version '" + sqljVersionInfo + "'" );
+        }
+        else
+        {
+            getLog().info(  "Couldn't retrieve SQLJ Translator version info" );
+        }
+
         if ( !checkSqljDirAndFileDeclarations() )
         {
             String msg = "Plugin configuration contains invalid SQLJ directory or file declaration(s).";
@@ -185,7 +197,7 @@ public class SqljMojo
         Class sqljClass;
         try
         {
-            sqljClass = Class.forName( "sqlj.tools.Sqlj" );
+            sqljClass = Class.forName( SQLJ_CLASS );
         }
         catch ( ClassNotFoundException e )
         {
@@ -315,5 +327,20 @@ public class SqljMojo
         // how it works if Java source files are deleted.
 
         return staleFiles;
+    }
+
+    private String getSqljVersionInfo()
+    {
+        String version;
+        try
+        {
+            Class sqljClass = Class.forName( SQLJ_CLASS );
+            version = (String) MethodUtils.invokeExactStaticMethod( sqljClass, "getVersion", null );
+        }
+        catch ( Exception e )
+        {
+            version = null;
+        }
+        return version;
     }
 }
