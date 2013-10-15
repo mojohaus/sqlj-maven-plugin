@@ -3,6 +3,7 @@ package org.codehaus.mojo.sqlj;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -84,7 +85,7 @@ public class SqljMojo
         }
         else
         {
-            getLog().info(  "Couldn't retrieve SQLJ Translator version info" );
+            getLog().info( "Couldn't retrieve SQLJ Translator version info" );
         }
 
         if ( !checkSqljDirAndFileDeclarations() )
@@ -109,11 +110,11 @@ public class SqljMojo
             throw new MojoFailureException( e.getMessage() );
         }
 
-        Set<File> sqljFiles = getStaleSqljFiles();
+        Set<File> staleSqljFiles = getStaleSqljFiles();
         boolean translationPerformed;
-        if ( !sqljFiles.isEmpty() )
+        if ( !staleSqljFiles.isEmpty() )
         {
-            for ( File file : sqljFiles )
+            for ( File file : staleSqljFiles )
             {
                 buildContext.removeMessages( file );
                 try
@@ -122,12 +123,13 @@ public class SqljMojo
                 }
                 catch ( MojoExecutionException e )
                 {
-                    buildContext.addMessage( file, 0, 0, "Error translating SQLJ file", BuildContext.SEVERITY_ERROR, e );
+                    final String msg = "Error translating SQLJ file";
+                    buildContext.addMessage( file, 0, 0, msg, BuildContext.SEVERITY_ERROR, e );
                     throw e;
                 }
             }
             translationPerformed = true;
-            final int numberOfFiles = sqljFiles.size();
+            final int numberOfFiles = staleSqljFiles.size();
             getLog().info( "Translated " + numberOfFiles + " SQLJ file" + ( numberOfFiles > 0 ? "s." : "." ) );
         }
         else
@@ -319,7 +321,7 @@ public class SqljMojo
                 // Should never happen...
                 getLog().error( "Unexpected list of SQLJ files returned; aborting..." );
                 throw new MojoExecutionException( "Unexpected list of SQLJ files returned when examining " + sqljFile
-                    + ": " + modifiedFiles );
+                    + ": " + Arrays.toString( modifiedFiles ) );
             }
         }
 
