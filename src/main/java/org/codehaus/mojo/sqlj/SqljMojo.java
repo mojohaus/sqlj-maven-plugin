@@ -44,6 +44,8 @@ public class SqljMojo
 
     /**
      * Show detailed information on SQLJ processing. (Is automatically shown if Maven is executed in debug mode.)
+     * 
+     * @since 1.2
      */
     @Parameter( property = "sqlj.verbose", defaultValue = "false" )
     private boolean verbose;
