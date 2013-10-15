@@ -182,6 +182,29 @@
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>enforce-sqlj-lib-exists</id>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <rules>
+                    <requireFilesExist>
+                      <files>
+                        <file>${settings.localRepository}/com/ibm/db2/sqlj/1.0/sqlj-1.10.jar</file>
+                      </files>
+                      <message>The ITs use the SQLJ library as a dependency</message>
+                    </requireFilesExist>
+                  </rules>
+                  <fail>true</fail>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-invoker-plugin</artifactId>
             <configuration>
               <debug>true</debug>
