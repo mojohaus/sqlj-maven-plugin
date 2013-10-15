@@ -193,7 +193,7 @@
                   <rules>
                     <requireFilesExist>
                       <files>
-                        <file>${settings.localRepository}/com/ibm/db2/sqlj/1.0/sqlj-1.10.jar</file>
+                        <file>${settings.localRepository}/com/ibm/db2/sqlj/1.0/sqlj-1.0.jar</file>
                       </files>
                       <message>The ITs use the SQLJ library as a dependency</message>
                     </requireFilesExist>
