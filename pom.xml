@@ -110,7 +110,6 @@
       <artifactId>plexus-build-api</artifactId>
       <version>0.0.7</version>
     </dependency>
-    <!-- generated help mojo has a dependency to plexus-utils -->
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
