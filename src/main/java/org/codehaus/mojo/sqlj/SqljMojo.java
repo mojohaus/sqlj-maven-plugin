@@ -2,6 +2,8 @@ package org.codehaus.mojo.sqlj;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -80,7 +82,17 @@ public class SqljMojo
     public void execute()
         throws MojoExecutionException, MojoFailureException
     {
-        String sqljVersionInfo = getSqljVersionInfo();
+        URLClassLoader sqljClassLoader = getSqljClassLoader();
+        if ( getLog().isDebugEnabled() )
+        {
+            getLog().debug( "SQLJ classpath:" );
+            for ( URL url : sqljClassLoader.getURLs() )
+            {
+                getLog().debug( " " + url.getPath() );
+            }
+        }
+
+        String sqljVersionInfo = getSqljVersionInfo( sqljClassLoader );
         if ( sqljVersionInfo != null )
         {
             getLog().info( "Using SQLJ Translator version '" + sqljVersionInfo + "'" );
@@ -121,7 +133,7 @@ public class SqljMojo
                 buildContext.removeMessages( file );
                 try
                 {
-                    translate( file );
+                    translate( file, sqljClassLoader );
                 }
                 catch ( MojoExecutionException e )
                 {
@@ -152,6 +164,56 @@ public class SqljMojo
         {
             buildContext.refresh( getGeneratedSourcesDirectory() );
         }
+    }
+
+    private List<URL> getProjectClasspath()
+        throws Exception
+    {
+        @SuppressWarnings( "unchecked" )
+        final List<String> classpathElements = mavenProject.getCompileClasspathElements();
+        List<URL> result = new ArrayList<URL>( classpathElements.size() );
+        for ( String s : classpathElements )
+        {
+            File tmp = new File( s );
+            result.add( tmp.toURI().toURL() );
+        }
+
+        return result;
+    }
+
+    private URLClassLoader getSqljClassLoader()
+        throws MojoExecutionException, MojoFailureException
+    {
+        ClassLoader pluginClassLoader = Thread.currentThread().getContextClassLoader();
+        if ( pluginClassLoader instanceof URLClassLoader == false )
+        {
+            throw new MojoFailureException( "Unexpected error: Class loader is not of URLClassLoader type" );
+        }
+        URLClassLoader pluginURLClassLoader = (URLClassLoader) pluginClassLoader;
+
+        // This is the classpath we want:
+        // 1. the plugin's classpath
+        // 2. the project's compile classpath
+        URL[] pluginClassLoaderURLs = pluginURLClassLoader.getURLs();
+        List<URL> projectClasspathURLs;
+        try
+        {
+            projectClasspathURLs = getProjectClasspath();
+        }
+        catch ( Exception e )
+        {
+            throw new MojoExecutionException( "Couldn't retrieve classpath for project", e );
+        }
+
+        List<URL> tmp = new ArrayList<URL>( pluginClassLoaderURLs.length + projectClasspathURLs.size() );
+        for ( URL url : pluginClassLoaderURLs )
+        {
+            tmp.add( url );
+        }
+        tmp.addAll( projectClasspathURLs );
+
+        URLClassLoader newClassLoader = new URLClassLoader( tmp.toArray( new URL[0] ) );
+        return newClassLoader;
     }
 
     private boolean checkSqljDirAndFileDeclarations()
@@ -192,16 +254,17 @@ public class SqljMojo
      * Executes the SQLJ Translator on the given file.
      * 
      * @param file the file to translate
+     * @param classLoader the class loader to use for loading the SQLJ Translator class with
      * @throws MojoFailureException in case of failure.
      * @throws MojoExecutionException in case of execution failure.
      */
-    private void translate( File file )
+    private void translate( File file, ClassLoader classLoader )
         throws MojoFailureException, MojoExecutionException
     {
-        Class sqljClass;
+        Class<?> sqljClass;
         try
         {
-            sqljClass = Class.forName( SQLJ_CLASS );
+            sqljClass = classLoader.loadClass( SQLJ_CLASS );
         }
         catch ( ClassNotFoundException e )
         {
@@ -333,12 +396,12 @@ public class SqljMojo
         return staleFiles;
     }
 
-    private String getSqljVersionInfo()
+    private String getSqljVersionInfo( ClassLoader classLoader )
     {
         String version;
         try
         {
-            Class sqljClass = Class.forName( SQLJ_CLASS );
+            Class<?> sqljClass = classLoader.loadClass( SQLJ_CLASS );
             version = (String) MethodUtils.invokeExactStaticMethod( sqljClass, "getVersion", null );
         }
         catch ( Exception e )

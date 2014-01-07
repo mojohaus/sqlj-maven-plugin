@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.codehaus.mojo.sqlj.its</groupId>
+  <artifactId>sqlj-classpath-2</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <description>Verifies that project's dependencies are added to the SQLJ classpath (MSQLJ-15).</description>
+
+  <modules>
+    <module>module1</module>
+    <module>module2</module>
+  </modules>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.ibm.db2</groupId>
+        <artifactId>sqlj</artifactId>
+        <version>1.0</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>sqlj-maven-plugin</artifactId>
+          <version>@project.version@</version>
+          <dependencies>
+            <dependency>
+              <groupId>com.ibm.db2</groupId>
+              <artifactId>sqlj</artifactId>
+              <version>1.0</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>
