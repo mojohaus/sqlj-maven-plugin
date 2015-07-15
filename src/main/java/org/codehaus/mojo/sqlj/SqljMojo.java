@@ -63,6 +63,12 @@ public class SqljMojo
      */
     @Parameter( property = "sqlj.sqljDirectories" )
     private File[] sqljDirs;
+    
+    /**
+     * Additional arguments to pass to the SQLJ translator.
+     */
+    @Parameter ( property = "sqlj.additionalArgs")
+    private List<String> additionalArgs;
 
     /**
      * The enclosing project.
@@ -285,6 +291,7 @@ public class SqljMojo
         }
         sqljArgs.add( "-compile=false" );
         sqljArgs.add( file.getAbsolutePath() );
+        sqljArgs.addAll(additionalArgs);
 
         Integer returnCode = null;
         try
