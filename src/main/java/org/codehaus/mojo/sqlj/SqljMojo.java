@@ -2,6 +2,7 @@ package org.codehaus.mojo.sqlj;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -402,7 +403,9 @@ public class SqljMojo
         try
         {
             Class<?> sqljClass = classLoader.loadClass( SQLJ_CLASS );
-            version = (String) MethodUtils.invokeExactStaticMethod( sqljClass, "getVersion", null );
+            Method method = sqljClass.getDeclaredMethod("getVersion");
+            method.setAccessible(true);
+            version = (String) method.invoke(sqljClass);
         }
         catch ( Exception e )
         {
