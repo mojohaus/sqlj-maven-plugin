@@ -414,11 +414,11 @@ public class SqljMojo
                 MethodUtils.invokeExactStaticMethod( sqljClass, "printVersion", new PrintWriter( stringWriter ) );
                 version = stringWriter.toString();
             }
-	        return version;
+            return version;
         }
         catch ( Exception e )
         {
-        	return null;
+            return null;
         }
     }
     
