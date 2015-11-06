@@ -2,7 +2,8 @@ package org.codehaus.mojo.sqlj;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -399,18 +400,26 @@ public class SqljMojo
 
     private String getSqljVersionInfo( ClassLoader classLoader )
     {
-        String version;
-        try
+        try 
         {
-            Class<?> sqljClass = classLoader.loadClass( SQLJ_CLASS );
-            Method method = sqljClass.getDeclaredMethod("getVersion");
-            method.setAccessible(true);
-            version = (String) method.invoke(sqljClass);
+        	Class<?> sqljClass = classLoader.loadClass( SQLJ_CLASS );
+        	String version = null;
+	        try
+	        {
+	            version = (String) MethodUtils.invokeExactStaticMethod( sqljClass, "getVersion", null );
+	        }
+	        catch ( NoSuchMethodException e ) 
+	        {
+        		StringWriter stringWriter = new StringWriter();
+				MethodUtils.invokeExactStaticMethod( sqljClass, "printVersion", new PrintWriter( stringWriter ) );
+				version = stringWriter.toString();
+	        }
+	        return version;
         }
         catch ( Exception e )
         {
-            version = null;
+        	return null;
         }
-        return version;
     }
+    
 }
