@@ -402,18 +402,18 @@ public class SqljMojo
     {
         try 
         {
-        	Class<?> sqljClass = classLoader.loadClass( SQLJ_CLASS );
-        	String version = null;
-	        try
-	        {
-	            version = (String) MethodUtils.invokeExactStaticMethod( sqljClass, "getVersion", null );
-	        }
-	        catch ( NoSuchMethodException e ) 
-	        {
-        		StringWriter stringWriter = new StringWriter();
-				MethodUtils.invokeExactStaticMethod( sqljClass, "printVersion", new PrintWriter( stringWriter ) );
-				version = stringWriter.toString();
-	        }
+            Class<?> sqljClass = classLoader.loadClass( SQLJ_CLASS );
+            String version = null;
+            try
+            {
+                version = (String) MethodUtils.invokeExactStaticMethod( sqljClass, "getVersion", null );
+            }
+            catch ( NoSuchMethodException e ) 
+            {
+                StringWriter stringWriter = new StringWriter();
+                MethodUtils.invokeExactStaticMethod( sqljClass, "printVersion", new PrintWriter( stringWriter ) );
+                version = stringWriter.toString();
+            }
 	        return version;
         }
         catch ( Exception e )
