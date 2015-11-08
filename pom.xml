@@ -16,13 +16,6 @@
   <description>A wrapper around the sqlj.tools.Sqlj SQLJ Translator.</description>
   <url>http://mojo.codehaus.org/sqlj-maven-plugin/</url>
   <inceptionYear>2008</inceptionYear>
-  <licenses>
-    <license>
-      <name>The MIT License</name>
-      <url>https://svn.codehaus.org/mojo/trunk/mojo/was6-maven-plugin/LICENSE.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
 
   <developers>
     <developer>
