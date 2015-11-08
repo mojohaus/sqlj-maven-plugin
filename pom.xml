@@ -59,6 +59,7 @@
   <properties>
     <mavenVersion>2.0</mavenVersion>
     <mavenPluginPluginVersion>3.2</mavenPluginPluginVersion>
+    <scmpublish.content>${project.build.directory}/staging/sqlj-maven-plugin</scmpublish.content>
   </properties>
 
   <dependencies>
