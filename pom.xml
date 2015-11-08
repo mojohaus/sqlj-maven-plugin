@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.codehaus.mojo</groupId>
     <artifactId>mojo-parent</artifactId>
-    <version>32</version>
+    <version>38</version>
   </parent>
 
   <artifactId>sqlj-maven-plugin</artifactId>
