@@ -14,7 +14,7 @@
 
   <name>Mojo's SQLJ Maven Plugin</name>
   <description>A wrapper around the sqlj.tools.Sqlj SQLJ Translator.</description>
-  <url>http://mojo.codehaus.org/sqlj-maven-plugin/</url>
+  <url>http://www.mojohaus.org/sqlj-maven-plugin/</url>
   <inceptionYear>2008</inceptionYear>
 
   <developers>
