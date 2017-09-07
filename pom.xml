@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.codehaus.mojo</groupId>
     <artifactId>mojo-parent</artifactId>
-    <version>38</version>
+    <version>40</version>
   </parent>
 
   <artifactId>sqlj-maven-plugin</artifactId>
@@ -58,7 +58,6 @@
 
   <properties>
     <mavenVersion>2.0</mavenVersion>
-    <mavenPluginPluginVersion>3.2</mavenPluginPluginVersion>
     <mojo.java.target>1.6</mojo.java.target>
     <scmpublish.content>${project.build.directory}/staging/sqlj-maven-plugin</scmpublish.content>
   </properties>
@@ -82,7 +81,6 @@
     <dependency>
       <groupId>org.apache.maven.plugin-tools</groupId>
       <artifactId>maven-plugin-annotations</artifactId>
-      <version>${mavenPluginPluginVersion}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -117,7 +115,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-plugin-plugin</artifactId>
-        <version>${mavenPluginPluginVersion}</version>
         <configuration>
           <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
         </configuration>
@@ -128,12 +125,6 @@
               <goal>descriptor</goal>
             </goals>
           </execution>
-          <execution>
-            <id>help-goal</id>
-            <goals>
-              <goal>helpmojo</goal>
-            </goals>
-          </execution>
         </executions>
       </plugin>
     </plugins>
@@ -142,26 +133,9 @@
   <reporting>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-changes-plugin</artifactId>
-        <version>2.9</version>
-        <configuration>
-          <onlyCurrentVersion>true</onlyCurrentVersion>
-          <columnNames>Type,Key,Summary,Status,Resolution,Assignee</columnNames>
-          <sortColumnNames>Key,Type</sortColumnNames>
-        </configuration>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>jira-report</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
-      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>2.5.2</version>
+        <version>3.0.5</version>
         <configuration>
           <threshold>Normal</threshold>
         </configuration>
