@@ -51,8 +51,8 @@
     <url>https://github.com/mojohaus/sqlj-maven-plugin</url>
   </scm>
   <issueManagement>
-    <system>jira</system>
-    <url>http://jira.codehaus.org/browse/MSQLJ</url>
+    <system>GitHub</system>
+    <url>https://github.com/mojohaus/sqlj-maven-plugin/issues</url>
   </issueManagement>
   <ciManagement />
 
